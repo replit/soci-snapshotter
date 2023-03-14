@@ -180,7 +180,8 @@ func FetchSociArtifacts(ctx context.Context, refspec reference.Spec, indexDesc o
 	defer indexReader.Close()
 
 	cw := new(ioutils.CountWriter)
-	tee := io.TeeReader(indexReader, cw)
+	buf := bytes.Buffer{}
+	tee := io.TeeReader(indexReader, io.MultiWriter(cw, &buf))
 
 	var index soci.Index
 	err = soci.DecodeIndex(tee, &index)
@@ -193,6 +194,8 @@ func FetchSociArtifacts(ctx context.Context, refspec reference.Spec, indexDesc o
 		if err != nil {
 			return nil, err
 		}
+		log.G(ctx).Infof("Before: %s", string(buf.Bytes()))
+		log.G(ctx).Infof("After: %s", string(b))
 		err = localStore.Push(ctx, ocispec.Descriptor{
 			Digest: indexDesc.Digest,
 			Size:   int64(len(b)),
