@@ -195,7 +195,7 @@ func FetchSociArtifacts(ctx context.Context, refspec reference.Spec, indexDesc o
 		}
 		err = localStore.Push(ctx, ocispec.Descriptor{
 			Digest: indexDesc.Digest,
-			Size:   cw.Size(),
+			Size:   int64(len(b)),
 		}, bytes.NewReader(b))
 
 		if err != nil {
