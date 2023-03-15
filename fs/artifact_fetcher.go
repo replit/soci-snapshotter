@@ -198,8 +198,8 @@ func FetchSociArtifacts(ctx context.Context, refspec reference.Spec, indexDesc o
 		log.G(ctx).Infof("After: %s", string(b))
 		err = localStore.Push(ctx, ocispec.Descriptor{
 			Digest: indexDesc.Digest,
-			Size:   int64(len(b)),
-		}, bytes.NewReader(b))
+			Size:   int64(buf.Len()),
+		}, &buf)
 
 		if err != nil {
 			return nil, fmt.Errorf("unable to store index in local store: %w", err)
